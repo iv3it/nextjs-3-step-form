@@ -91,64 +91,119 @@ function ProductList() {
           Dodaj produkt
         </Button>
       </div>
-      <div className="border rounded-[10px] overflow-hidden">
-        <Table>
-          <TableHeader className="bg-gray-50">
-            <TableRow>
-              <TableHead className="px-4">Nazwa</TableHead>
-              <TableHead className="px-4">SKU</TableHead>
-              <TableHead className="px-4">Kategoria</TableHead>
-              <TableHead className="px-4">Cena Brutto</TableHead>
-              <TableHead className="px-4">Status</TableHead>
-              <TableHead className="px-4">Magazyn</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="bg-white">
-            {products.map((product, index) => (
-              <TableRow key={index}>
-                <TableCell className="text-sm font-medium px-4 py-2">{product.name}</TableCell>
-                <TableCell className="text-xs text-muted-foreground px-4 py-2">{product.sku}</TableCell>
-                <TableCell className="text-xs text-muted-foreground px-4 py-2">{product.category}</TableCell>
-                <TableCell className="text-sm font-medium px-4 py-2">{(product.grossPrice / 100).toFixed(2)} PLN</TableCell>
-                <TableCell className="px-4 py-2">
-                  {product.status === "available" ? (
-                    <Badge variant="green">Dostępny</Badge>
-                  ) : (
-                    <Badge variant="destructive">Niedostępny</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-sm px-4 py-2">{product.amountInStore ?? "—" }</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter className="bg-gray-50">
-            <TableRow>
-              <TableCell colSpan={6} className="p-4">
-                <div className="flex w-full items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Strona 1 z 2 · 7 produktów</span>
-
-                  <Pagination>
-                    <PaginationContent className="ml-auto">
-                      <PaginationItem>
-                        <PaginationPrevious href="#" text="Wstecz" />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#" isActive>1</PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#">2</PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationNext href="#" text="Dalej" />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+      <div className="md:hidden flex flex-col justify-between gap-6">
+        <div className="flex flex-col gap-2">
+          {products.map((product, index) => (
+            <div key={index} className="flex flex-col p-3 border rounded-[10px] overflow-hidden gap-2">
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium">{product.name}</p>
+                  <p className="text-xs text-muted-foreground">{product.sku}</p>
                 </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
+                {product.status === "available" ? (
+                  <Badge variant="green">Dostępny</Badge>
+                ) : (
+                  <Badge variant="destructive">Niedostępny</Badge>
+                )}
+              </div>
+
+              <div className="flex justify-between bg-accent rounded-[9px] p-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Kategoria</p>
+                  <p className="text-sm">{product.category}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Cena brutto</p>
+                  <p className="text-sm font-medium">{(product.grossPrice / 100).toFixed(2)} PLN</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Magazyn</p>
+                  <p className="text-sm">{product.amountInStore ?? "—" }</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col md:flex-row w-full items-center justify-between">
+          <span className="text-xs text-muted-foreground">Strona 1 z 2 · 7 produktów</span>
+
+          <Pagination className="mt-4 md:mt-0">
+            <PaginationContent className="md:ml-auto">
+              <PaginationItem>
+                <PaginationPrevious href="#" text="Wstecz" />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#" isActive>1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#">2</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href="#" text="Dalej" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
+
+      <div className="hidden md:block w-full border rounded-[10px] overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-50">
+              <TableRow>
+                <TableHead className="px-4">Nazwa</TableHead>
+                <TableHead className="px-4">SKU</TableHead>
+                <TableHead className="px-4">Kategoria</TableHead>
+                <TableHead className="px-4">Cena Brutto</TableHead>
+                <TableHead className="px-4">Status</TableHead>
+                <TableHead className="px-4">Magazyn</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="bg-white">
+              {products.map((product, index) => (
+                <TableRow key={index}>
+                  <TableCell className="text-sm font-medium px-4 py-2">{product.name}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground px-4 py-2">{product.sku}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground px-4 py-2">{product.category}</TableCell>
+                  <TableCell className="text-sm font-medium px-4 py-2">{(product.grossPrice / 100).toFixed(2)} PLN</TableCell>
+                  <TableCell className="px-4 py-2">
+                    {product.status === "available" ? (
+                      <Badge variant="green">Dostępny</Badge>
+                    ) : (
+                      <Badge variant="destructive">Niedostępny</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm px-4 py-2">{product.amountInStore ?? "—" }</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter className="bg-gray-50">
+              <TableRow>
+                <TableCell colSpan={6} className="p-4">
+                  <div className="flex flex-col md:flex-row w-full items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Strona 1 z 2 · 7 produktów</span>
+
+                    <Pagination className="mt-4 md:mt-0">
+                      <PaginationContent className="md:ml-auto">
+                        <PaginationItem>
+                          <PaginationPrevious href="#" text="Wstecz" />
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink href="#" isActive>1</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink href="#">2</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationNext href="#" text="Dalej" />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </div>
     </div>
   );
 }
