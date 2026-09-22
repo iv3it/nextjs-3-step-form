@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge"
@@ -23,6 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import AddProductDialog from "@/components/AddProductDialog";
 
 type ProductStatus = "available" | "unavailable";
 
@@ -86,10 +87,8 @@ function ProductList() {
           <h1 className="text-xl font-semibold">Produkty</h1>
           <h2 className="text-sm text-muted-foreground">7 produktów w katalogu</h2>
         </div>
-        <Button className="h-auto rounded-full px-4 py-2">
-          <Plus className="w-4 h-4 mr-1.5" />
-          Dodaj produkt
-        </Button>
+
+        <AddProductDialog />
       </div>
       <div className="md:hidden flex flex-col justify-between gap-6">
         <div className="flex flex-col gap-2">
