@@ -80,7 +80,7 @@ const products: Product[] = [
 
 function ProductList() {
   return (
-    <div className="w-full flex flex-col gap-y-6 py-12.5 max-[1240px]:px-4 max-[1240px]:py-6">
+    <div className="w-full flex flex-col gap-y-4 md:gap-y-6 py-12.5 max-[1240px]:px-4 max-[1240px]:py-6">
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Produkty</h1>
