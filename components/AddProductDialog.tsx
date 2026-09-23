@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, ArrowRightIcon, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
@@ -49,6 +49,8 @@ function AddProductDialog() {
     { label: "5%", value: "5" },
   ]
 
+  const [currentStep, setCurrentStep] = useState(1);
+
   const [priceNet, setPriceNet] = useState("");
   const [priceGross, setPriceGross] = useState("");
   const [vatValue, setVatValue] = useState("23");
@@ -78,9 +80,21 @@ function AddProductDialog() {
     }
   }
 
+  const handlePrevStep = () => {
+    setCurrentStep((step) => Math.max(step - 1, 1))
+  }
+
+  const handleNextStep = () => {
+    setCurrentStep((step) => Math.min(step + 1, 3))
+  }
+
   return (
     <>
-      <Dialog>
+      <Dialog onOpenChange={(open) => {
+        if(!open) {
+          setCurrentStep(1);
+        }
+      }}>
         <form>
           <DialogTrigger render={
             <Button className="h-auto rounded-full px-4 py-2">
@@ -107,11 +121,11 @@ function AddProductDialog() {
               <div className="w-16 h-px bg-[#e4e4e4] hidden md:block" />
 
               <div className="flex justify-center items-center gap-x-3">
-                <div className="w-8 h-8 rounded-full bg-accent flex justify-center items-center">
-                  <p className="text-muted-foreground text-sm font-semibold">2</p>
+                <div className={`w-8 h-8 rounded-full flex justify-center items-center ${currentStep >= 2 ? "bg-blue-600" : "bg-accent"}`}>
+                  <p className={`text-sm font-semibold ${currentStep >= 2 ? "text-white" : "text-muted-foreground"}`}>2</p>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-medium text-muted-foreground">Cena</p>
+                  <p className={`text-sm font-medium ${currentStep >= 2 ? "text-foreground" : "text-muted-foreground"}`}>Cena</p>
                   <p className="text-xs text-muted-foreground">Dane cenowe</p>
                 </div>
               </div>
@@ -119,11 +133,11 @@ function AddProductDialog() {
               <div className="w-16 h-px bg-[#e4e4e4] hidden md:block" />
 
               <div className="flex justify-center items-center gap-x-3">
-                <div className="w-8 h-8 rounded-full bg-accent flex justify-center items-center">
-                  <p className="text-muted-foreground text-sm font-semibold">3</p>
+                <div className={`w-8 h-8 rounded-full flex justify-center items-center ${currentStep >= 3 ? "bg-blue-600" : "bg-accent"}`}>
+                  <p className={`text-sm font-semibold ${currentStep >= 3 ? "text-white" : "text-muted-foreground"}`}>3</p>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-medium text-muted-foreground">Dostępność</p>
+                  <p className={`text-sm font-medium ${currentStep >= 3 ? "text-foreground" : "text-muted-foreground"}`}>Dostępność</p>
                   <p className="text-xs text-muted-foreground">Stany magazynowe</p>
                 </div>
               </div>
@@ -131,7 +145,7 @@ function AddProductDialog() {
 
             <div className="py-5 flex flex-col">
               {/* Step 1 */}
-              <div className="flex flex-col gap-y-4">
+              <div className={currentStep === 1 ? "flex flex-col gap-y-4" : "hidden"}>
                 <div className="w-full flex gap-x-4">
                   <div className="w-full md:w-1/2 flex flex-col gap-2">
                     <Label>Nazwa produktu</Label>
@@ -211,7 +225,7 @@ function AddProductDialog() {
               </div>
 
               {/* Step 2 */}
-              <div className="flex flex-col gap-y-4 hidden">
+              <div className={currentStep === 2 ? "flex flex-col gap-y-4" : "hidden"}>
                 <div className="w-full flex gap-x-4">
                   <div className="w-full md:w-1/2 flex flex-col gap-2">
                     <Label>Cena netto</Label>
@@ -281,7 +295,7 @@ function AddProductDialog() {
               </div>
 
               {/* Step 3 */}
-              <div className="flex flex-col gap-y-4 hidden">
+              <div className={currentStep === 3 ? "flex flex-col gap-y-4" : "hidden"}>
                 <div className="flex items-center space-x-2">
                   <Switch id="isAvailable" />
                   <Label htmlFor="isAvailable">Produkt jest dostępny</Label>
@@ -323,11 +337,11 @@ function AddProductDialog() {
 
             <DialogFooter>
               <div className="flex justify-between w-full">
-                <Button variant="outline" className="h-auto px-2.5 py-2 border">
+                <Button onClick={handlePrevStep} disabled={currentStep === 1} variant="outline" className="h-auto px-2.5 py-2 border">
                   <ArrowLeft className="mr-1.5 h-4 w-4" />
                   Wstecz
                 </Button>
-                <Button type="submit" className="h-auto rounded-full px-4 py-2">
+                <Button onClick={handleNextStep} disabled={currentStep === 3} type="submit" className="h-auto rounded-full px-4 py-2">
                   Dalej
                   <ArrowRightIcon className="ml-1.5 h-4 w-4" />
                 </Button>
