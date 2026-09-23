@@ -22,40 +22,18 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
+import { categoryList, currencyList, manufacturerList, vatList, featureList } from "@/lib/product-schema";
 
 function AddProductDialog() {
-
-  const manufacturerList = [
-    { label: "Apple", value: "apple" },
-    { label: "Dell", value: "dell" },
-    { label: "Samsung", value: "samsung" },
-  ]
-
-  const productCategories = [
-    { label: "Laptop", value: "laptop" },
-    { label: "Desktop", value: "desktop" },
-    { label: "Tablet", value: "tablet" },
-  ]
-
-  const currencyList = [
-    { label: "PLN", value: "pln" },
-    { label: "USD", value: "usd" },
-    { label: "EUR", value: "eur" },
-  ]
-
-  const vatList = [
-    { label: "23%", value: "23" },
-    { label: "8%", value: "8" },
-    { label: "5%", value: "5" },
-  ]
-
   const [currentStep, setCurrentStep] = useState(1);
 
   const [priceNet, setPriceNet] = useState("");
   const [priceGross, setPriceGross] = useState("");
   const [vatValue, setVatValue] = useState("23");
-  const [minStockQuantity, setMinStockQuantity] = useState("");
-  const [maxStockQuantity, setMaxStockQuantity] = useState("");
+  const [minCartQuantity, setMinCartQuantity] = useState("");
+  const [maxCartQuantity, setMaxCartQuantity] = useState("");
+  const [isLimited, setIsLimited] = useState(false);
+  const [stockQuantity, setStockQuantity] = useState("");
 
   const handleChangePrice = (value: string) => {
     // max 2 decimal places
@@ -68,15 +46,15 @@ function AddProductDialog() {
     setVatValue(value)
   }
 
-  const handleMinStockQuantity = (value: string) => {
+  const handleMinCartQuantity = (value: string) => {
     if (/^\d*$/.test(value)) {
-      setMinStockQuantity(value)
+      setMinCartQuantity(value)
     }
   }
 
-  const handleMaxStockQuantity = (value: string) => {
+  const handleMaxCartQuantity = (value: string) => {
     if (/^\d*$/.test(value)) {
-      setMaxStockQuantity(value)
+      setMaxCartQuantity(value)
     }
   }
 
@@ -184,13 +162,13 @@ function AddProductDialog() {
                   </div>
                   <div className="w-full md:w-1/2 flex flex-col gap-2">
                     <Label>Kategoria</Label>
-                    <Select items={productCategories}>
+                    <Select items={categoryList}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Wybierz kategorię" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {productCategories.map((item) => (
+                          {categoryList.map((item) => (
                             <SelectItem key={item.value} value={item.value}>
                               {item.label}
                             </SelectItem>
@@ -203,27 +181,16 @@ function AddProductDialog() {
                 <div className="w-full flex flex-col gap-2">
                   <Label>Cechy produktu</Label>
                   <ToggleGroup variant="outline" size="sm" defaultValue={[]} multiple>
-                    <ToggleGroupItem value="bluetooth" aria-label="Toggle bluetooth" className="py-0.5 px-2 rounded-[26px]">
-                      Bluetooth
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="wifi" aria-label="Toggle wifi" className="py-0.5 px-2 rounded-[26px]">
-                      WiFi
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="usbc" aria-label="Toggle usbc" className="py-0.5 px-2 rounded-[26px]">
-                      USB-C
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="waterproof" aria-label="Toggle waterproof" className="py-0.5 px-2 rounded-[26px]">
-                      Wodoodporny
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="wireless" aria-label="Toggle wireless" className="py-0.5 px-2 rounded-[26px]">
-                      Bezprzewodowy
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="eco" aria-label="Toggle eco" className="py-0.5 px-2 rounded-[26px]">
-                      Ekologiczny
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="premium" aria-label="Toggle premium" className="py-0.5 px-2 rounded-[26px]">
-                      Premium
-                    </ToggleGroupItem>
+                    {featureList.map((feature) => (
+                      <ToggleGroupItem
+                        key={feature.value}
+                        value={feature.value}
+                        aria-label={`Toggle ${feature.value}`}
+                        className="py-0.5 px-2 rounded-[26px]"
+                      >
+                        {feature.label}
+                      </ToggleGroupItem>
+                    ))}
                   </ToggleGroup>
                 </div>
               </div>
@@ -307,21 +274,49 @@ function AddProductDialog() {
                 <Separator />
                 <FieldGroup>
                   <Field orientation="horizontal">
-                    <Checkbox id="isLimited" name="isLimited" />
+                    <Checkbox
+                      id="isLimited"
+                      name="isLimited"
+                      checked={isLimited}
+                      onCheckedChange={(checked) => {
+                        const limited = checked;
+
+                        setIsLimited(limited);
+
+                        if (!limited) {
+                          setStockQuantity("");
+                        }
+                      }}/>
                     <FieldLabel htmlFor="isLimited">
                       Produkt limitowany
                     </FieldLabel>
                   </Field>
                 </FieldGroup>
+                {isLimited && (
+                  <div className="w-full flex flex-col gap-2">
+                    <Label htmlFor="stockQuantity">Ilość na magazynie</Label>
+                    <Input
+                      id="stockQuantity"
+                      className="rounded-[50px]"
+                      type="number"
+                      min={0}
+                      step={1}
+                      value={stockQuantity}
+                      onChange={(event) => setStockQuantity(event.target.value)}
+                      placeholder="0"
+                    />
+                  </div>
+                )}
                 <Separator />
+                <p className="text-base font-medium">Limity koszyka</p>
                 <div className="w-full flex gap-x-4">
                   <div className="w-full md:w-1/2 flex flex-col gap-2">
                     <Label>Minimalna ilość</Label>
                     <Input className="rounded-[50px]"
                      type="text"
                      inputMode="decimal"
-                     value={minStockQuantity}
-                     onChange={(e) => handleMinStockQuantity(e.target.value)}
+                     value={minCartQuantity}
+                     onChange={(e) => handleMinCartQuantity(e.target.value)}
                      placeholder="0"
                     />
                   </div>
@@ -330,8 +325,8 @@ function AddProductDialog() {
                     <Input className="rounded-[50px]"
                      type="text"
                      inputMode="decimal"
-                     value={maxStockQuantity}
-                     onChange={(e) => handleMaxStockQuantity(e.target.value)}
+                     value={maxCartQuantity}
+                     onChange={(e) => handleMaxCartQuantity(e.target.value)}
                      placeholder="0"
                     />
                   </div>
