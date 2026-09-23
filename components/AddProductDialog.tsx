@@ -107,6 +107,8 @@ function AddProductDialog() {
               <DialogTitle>Dodaj nowy produkt</DialogTitle>
             </DialogHeader>
 
+            <Separator />
+
             <div className="flex justify-start items-center gap-4">
               <div className="flex justify-center items-center gap-x-3">
                 <div className="w-8 h-8 rounded-full bg-blue-600 flex justify-center items-center">
@@ -142,6 +144,8 @@ function AddProductDialog() {
                 </div>
               </div>
             </div>
+
+            <Separator />
 
             <div className="py-5 flex flex-col">
               {/* Step 1 */}
