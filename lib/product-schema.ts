@@ -58,10 +58,14 @@ export const currencyList = [
 
 export const productStepOneSchema = z.object({
   name: z.string().trim().min(3, "Wprowadź nazwę produktu"),
-  sku: z.string().min(1).max(24, "SKU może mieć maks. 24 znaki").regex(/^[A-Za-z0-9]+$/, "SKU może zawierać tylko litery i cyfry"),
+  sku: z.string().min(1, "SKU jest wymagane").max(24, "SKU może mieć maks. 24 znaki").regex(/^[A-Za-z0-9]+$/, "SKU może zawierać tylko litery i cyfry"),
   description: z.string().optional(),
-  manufacturer: z.enum(manufacturerValues),
-  category: z.enum(categoryValues),
+  manufacturer: z.union([z.literal(""), z.enum(manufacturerValues)]).refine((value) => value !== "", {
+    message: "Wybierz producenta",
+  }),
+  category: z.union([z.literal(""), z.enum(categoryValues)]).refine((value) => value !== "", {
+    message: "Wybierz kategorię",
+  }),
   features: z.array(z.enum(featureValues)).min(1, "Wybierz co najmniej jedną cechę produktu"),
 })
 
@@ -80,8 +84,12 @@ export const productStepTwoSchema = z.object({
     .regex(/^\d+(?:[.,]\d{1,2})?$/, "Wprowadź poprawną cenę")
     .transform((value) => Number(value.replace(",", ".")))
     .refine((value) => value >= 0, "Cena nie może być ujemna"),
-  vat: z.enum(vatValues),
-  currency: z.enum(currencyValues),
+  vat: z.union([z.literal(""), z.enum(vatValues)]).refine((value) => value !== "", {
+    message: "Wybierz stawkę VAT",
+  }),
+  currency: z.union([z.literal(""), z.enum(currencyValues)]).refine((value) => value !== "", {
+    message: "Wybierz walutę",
+  }),
 })
 
 const nonNegativeInteger = z.number().int("Wartość musi być liczbą całkowitą").nonnegative("Wartość nie może być ujemna");
@@ -116,3 +124,12 @@ export const productStepThreeSchema = z.object({
       });
     }
   });
+
+export const productFormSchema = z.object({
+  step1: productStepOneSchema,
+  step2: productStepTwoSchema,
+  step3: productStepThreeSchema,
+});
+
+export type ProductFormValues = z.input<typeof productFormSchema>;
+export type ProductFormOutput = z.output<typeof productFormSchema>;

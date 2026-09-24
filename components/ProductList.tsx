@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge"
@@ -24,19 +27,9 @@ import {
 } from "@/components/ui/table"
 
 import AddProductDialog from "@/components/AddProductDialog";
+import type { Product } from "@/lib/product-types";
 
-type ProductStatus = "available" | "unavailable";
-
-type Product = {
-  name: string;
-  sku: string;
-  category: string;
-  grossPrice: number;
-  status: ProductStatus;
-  amountInStore: number | undefined;
-}
-
-const products: Product[] = [
+const initialProducts: Product[] = [
   {
     name: "MacBook Pro 14\"",
     sku: "MBP14M3PRO",
@@ -80,6 +73,15 @@ const products: Product[] = [
 ]
 
 function ProductList() {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+
+  const handleProductCreated = (product: Product) => {
+    setProducts((currentProducts) => [
+      product,
+      ...currentProducts,
+    ]);
+  };
+
   return (
     <div className="w-full flex flex-col gap-y-4 md:gap-y-6 py-12.5 max-[1240px]:px-4 max-[1240px]:py-6">
       <div className="flex justify-between items-center">
@@ -88,7 +90,7 @@ function ProductList() {
           <h2 className="text-sm text-muted-foreground">7 produktów w katalogu</h2>
         </div>
 
-        <AddProductDialog />
+        <AddProductDialog onProductCreated={handleProductCreated} />
       </div>
       <div className="md:hidden flex flex-col justify-between gap-6">
         <div className="flex flex-col gap-2">
