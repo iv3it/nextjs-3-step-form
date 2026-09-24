@@ -30,21 +30,45 @@ function AddProductDialog() {
   const [priceNet, setPriceNet] = useState("");
   const [priceGross, setPriceGross] = useState("");
   const [vatValue, setVatValue] = useState("23");
+  const [currencyValue, setCurrencyValue] = useState("pln");
   const [minCartQuantity, setMinCartQuantity] = useState("");
   const [maxCartQuantity, setMaxCartQuantity] = useState("");
   const [isLimited, setIsLimited] = useState(false);
   const [stockQuantity, setStockQuantity] = useState("");
 
-  const handleChangePrice = (value: string) => {
-    // max 2 decimal places
-    if (/^\d*(\.\d{0,2})?$/.test(value)) {
-      setPriceNet(value)
-    }
-  }
+  const roundPrice = (value: number) => Number(value.toFixed(2));
 
-  const handleVatValue = (value: string) => {
-    setVatValue(value)
-  }
+  const parsePrice = (value: string) => {
+    if (value === "") return 0;
+    const normalized = value.replace(",", ".");
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const calculateGross = (net: string, vat: string) => roundPrice(parsePrice(net) * (1 + Number(vat) / 100));
+  const calculateNet = (gross: string, vat: string) => roundPrice(parsePrice(gross) / (1 + Number(vat) / 100));
+
+  const handlePriceChange = (source: "net" | "gross", value: string) => {
+    if (!/^(\d+([.,]\d{0,2})?)?$/.test(value)) return;
+
+    if (source === "net") {
+      setPriceNet(value);
+      setPriceGross(value ? calculateGross(value, vatValue).toString() : "");
+    } else {
+      setPriceGross(value);
+      setPriceNet(value ? calculateNet(value, vatValue).toString() : "");
+    }
+  };
+
+  const handleVatChange = (value: string) => {
+    setVatValue(value);
+
+    if (priceNet) {
+      setPriceGross(calculateGross(priceNet, value).toString());
+    } else if (priceGross) {
+      setPriceNet(calculateNet(priceGross, value).toString());
+    }
+  };
 
   const handleMinCartQuantity = (value: string) => {
     if (/^\d*$/.test(value)) {
@@ -204,7 +228,7 @@ function AddProductDialog() {
                      type="text"
                      inputMode="decimal"
                      value={priceNet}
-                     onChange={(e) => handleChangePrice(e.target.value)}
+                     onChange={(e) => handlePriceChange("net", e.target.value)}
                      placeholder="0.00"
                     />
                   </div>
@@ -214,7 +238,7 @@ function AddProductDialog() {
                      type="text"
                      inputMode="decimal"
                      value={priceGross}
-                     onChange={(e) => handleChangePrice(e.target.value)}
+                     onChange={(e) => handlePriceChange("gross", e.target.value)}
                      placeholder="0.00"
                     />
                   </div>
@@ -224,11 +248,10 @@ function AddProductDialog() {
                     <Label>Stawka VAT</Label>
                     <Select
                     items={vatList}
-                    value={vatValue}
                     defaultValue="23"
                     onValueChange={(value) => {
                       if (typeof value === "string") {
-                        handleVatValue(value);
+                        handleVatChange(value);
                       }
                     }}>
                       <SelectTrigger className="w-full">
@@ -247,7 +270,15 @@ function AddProductDialog() {
                   </div>
                   <div className="w-full md:w-1/2 flex flex-col gap-2">
                     <Label>Waluta</Label>
-                    <Select items={currencyList} defaultValue="pln">
+                    <Select
+                      items={currencyList}
+                      defaultValue="pln"
+                      value={currencyValue}
+                      onValueChange={(value) => {
+                      if (typeof value === "string") {
+                        setCurrencyValue(value);
+                      }
+                    }}>
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
