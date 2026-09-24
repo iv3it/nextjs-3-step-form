@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge"
+import { useQueryState, parseAsInteger } from "nuqs";
 
 import {
   Pagination,
@@ -35,6 +36,7 @@ const initialProducts: Product[] = [
     sku: "MBP14M3PRO",
     category: "Komputery",
     grossPrice: 999900,
+    currency: "pln",
     status: "available",
     amountInStore: undefined,
   },
@@ -43,6 +45,7 @@ const initialProducts: Product[] = [
     sku: "SGS24U256",
     category: "Telefony",
     grossPrice: 629900,
+    currency: "usd",
     status: "available",
     amountInStore: 45,
   },
@@ -51,6 +54,7 @@ const initialProducts: Product[] = [
     sku: "SNWH1000XM5",
     category: "RTV",
     grossPrice: 159900,
+    currency: "pln",
     status: "available",
     amountInStore: undefined,
   },
@@ -59,6 +63,7 @@ const initialProducts: Product[] = [
     sku: "BSWAU28P40",
     category: "AGD",
     grossPrice: 329900,
+    currency: "eur",
     status: "unavailable",
     amountInStore: 0,
   },
@@ -67,12 +72,14 @@ const initialProducts: Product[] = [
     sku: "XMSB8BLK",
     category: "Akcesoria",
     grossPrice: 17900,
+    currency: "pln",
     status: "available",
     amountInStore: undefined,
   },
 ]
 
 function ProductList() {
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const handleProductCreated = (product: Product) => {
@@ -80,6 +87,28 @@ function ProductList() {
       product,
       ...currentProducts,
     ]);
+
+    setPage(1);
+  };
+
+  const PAGE_SIZE = 5;
+  const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+
+  const paginatedProducts = products.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
+  const getProductLabel = (count: number) => {
+    if (count === 1) {
+      return "produkt";
+    }
+
+    if (count >= 2 && count <= 4) {
+      return "produkty";
+    }
+
+    return "produktów";
   };
 
   return (
@@ -87,14 +116,14 @@ function ProductList() {
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Produkty</h1>
-          <h2 className="text-sm text-muted-foreground">7 produktów w katalogu</h2>
+          <h2 className="text-sm text-muted-foreground">{products.length} {getProductLabel(products.length)} w katalogu</h2>
         </div>
 
         <AddProductDialog onProductCreated={handleProductCreated} />
       </div>
       <div className="md:hidden flex flex-col justify-between gap-6">
         <div className="flex flex-col gap-2">
-          {products.map((product, index) => (
+          {paginatedProducts.map((product, index) => (
             <div key={index} className="flex flex-col p-3 border rounded-[10px] overflow-hidden gap-2">
               <div className="flex justify-between items-center">
                 <div className="flex flex-col gap-1">
@@ -115,7 +144,7 @@ function ProductList() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Cena brutto</p>
-                  <p className="text-sm font-medium">{(product.grossPrice / 100).toFixed(2)} PLN</p>
+                  <p className="text-sm font-medium">{(product.grossPrice / 100).toFixed(2)} {product.currency.toUpperCase()}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Magazyn</p>
@@ -126,21 +155,55 @@ function ProductList() {
           ))}
         </div>
         <div className="flex flex-col md:flex-row w-full items-center justify-between">
-          <span className="text-xs text-muted-foreground">Strona 1 z 2 · 7 produktów</span>
+          <span className="text-xs text-muted-foreground">Strona {page} z {totalPages} · {products.length} {getProductLabel(products.length)}</span>
 
           <Pagination className="mt-4 md:mt-0">
             <PaginationContent className="md:ml-auto">
               <PaginationItem>
-                <PaginationPrevious href="#" text="Wstecz" />
+                <PaginationPrevious
+                  href="#"
+                  text="Wstecz"
+                  onClick={(event) => {
+                    event.preventDefault();
+
+                    if (page > 1) {
+                      setPage(page - 1);
+                    }
+                  }}
+                />
               </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, index) => {
+                const pageNumber = index + 1;
+
+                return (
+                  <PaginationItem key={pageNumber}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === pageNumber}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setPage(pageNumber);
+                      }}
+                    >
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
               <PaginationItem>
-                <PaginationLink href="#" isActive>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" text="Dalej" />
+                <PaginationNext
+                  href="#"
+                  text="Dalej"
+                  onClick={(event) => {
+                    event.preventDefault();
+
+                    if (page < totalPages) {
+                      setPage(page + 1);
+                    }
+                  }}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
@@ -160,12 +223,12 @@ function ProductList() {
               </TableRow>
             </TableHeader>
             <TableBody className="bg-white">
-              {products.map((product, index) => (
+              {paginatedProducts.map((product, index) => (
                 <TableRow key={index}>
                   <TableCell className="text-sm font-medium px-4 py-2">{product.name}</TableCell>
                   <TableCell className="text-xs text-muted-foreground px-4 py-2">{product.sku}</TableCell>
                   <TableCell className="text-xs text-muted-foreground px-4 py-2">{product.category}</TableCell>
-                  <TableCell className="text-sm font-medium px-4 py-2">{(product.grossPrice / 100).toFixed(2)} PLN</TableCell>
+                  <TableCell className="text-sm font-medium px-4 py-2">{(product.grossPrice / 100).toFixed(2)} {product.currency.toUpperCase()}</TableCell>
                   <TableCell className="px-4 py-2">
                     {product.status === "available" ? (
                       <Badge variant="green">Dostępny</Badge>
@@ -181,21 +244,55 @@ function ProductList() {
               <TableRow>
                 <TableCell colSpan={6} className="p-4">
                   <div className="flex flex-col md:flex-row w-full items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Strona 1 z 2 · 7 produktów</span>
+                    <span className="text-xs text-muted-foreground">Strona {page} z {totalPages} · {products.length} {getProductLabel(products.length)}</span>
 
                     <Pagination className="mt-4 md:mt-0">
                       <PaginationContent className="md:ml-auto">
                         <PaginationItem>
-                          <PaginationPrevious href="#" text="Wstecz" />
+                          <PaginationPrevious
+                            href="#"
+                            text="Wstecz"
+                            onClick={(event) => {
+                              event.preventDefault();
+
+                              if (page > 1) {
+                                setPage(page - 1);
+                              }
+                            }}
+                          />
                         </PaginationItem>
+
+                        {Array.from({ length: totalPages }, (_, index) => {
+                          const pageNumber = index + 1;
+
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationLink
+                                href="#"
+                                isActive={page === pageNumber}
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  setPage(pageNumber);
+                                }}
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        })}
+
                         <PaginationItem>
-                          <PaginationLink href="#" isActive>1</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink href="#">2</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationNext href="#" text="Dalej" />
+                          <PaginationNext
+                            href="#"
+                            text="Dalej"
+                            onClick={(event) => {
+                              event.preventDefault();
+
+                              if (page < totalPages) {
+                                setPage(page + 1);
+                              }
+                            }}
+                          />
                         </PaginationItem>
                       </PaginationContent>
                     </Pagination>

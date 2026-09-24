@@ -23,7 +23,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Checkbox } from "@/components/ui/checkbox";
 import { categoryList, currencyList, manufacturerList, vatList, featureList, productFormSchema, productStepOneSchema, productStepTwoSchema, productStepThreeSchema, type ProductFormValues } from "@/lib/product-schema";
 import { useForm, revalidateLogic } from "@tanstack/react-form";
-import type { Product } from "@/lib/product-types";
+import type { Product, ProductCurrency } from "@/lib/product-types";
 
 type AddProductDialogProps = {
   onProductCreated: (product: Product) => void;
@@ -90,6 +90,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
         grossPrice: Math.round(
           Number(value.step2.priceGross.replace(",", ".")) * 100
         ),
+        currency: value.step2.currency as ProductCurrency,
         status: value.step3.isAvailable ? "available" : "unavailable",
         amountInStore: value.step3.isLimited ? value.step3.stockQuantity : undefined,
       };
