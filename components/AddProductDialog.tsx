@@ -195,7 +195,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
           <Separator />
 
           <div className="flex justify-start items-center gap-4">
-            <div className="flex justify-center items-center gap-x-3">
+            <div className="flex flex-col md:flex-row justify-center md:items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-blue-600 flex justify-center items-center">
                 <p className="text-white text-sm font-semibold">1</p>
               </div>
@@ -207,7 +207,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
 
             <div className="w-16 h-px bg-[#e4e4e4] hidden md:block" />
 
-            <div className="flex justify-center items-center gap-x-3">
+            <div className="flex flex-col md:flex-row justify-center md:items-center gap-3">
               <div className={`w-8 h-8 rounded-full flex justify-center items-center ${currentStep >= 2 ? "bg-blue-600" : "bg-accent"}`}>
                 <p className={`text-sm font-semibold ${currentStep >= 2 ? "text-white" : "text-muted-foreground"}`}>2</p>
               </div>
@@ -219,7 +219,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
 
             <div className="w-16 h-px bg-[#e4e4e4] hidden md:block" />
 
-            <div className="flex justify-center items-center gap-x-3">
+            <div className="flex flex-col md:flex-row justify-center md:items-center gap-3">
               <div className={`w-8 h-8 rounded-full flex justify-center items-center ${currentStep >= 3 ? "bg-blue-600" : "bg-accent"}`}>
                 <p className={`text-sm font-semibold ${currentStep >= 3 ? "text-white" : "text-muted-foreground"}`}>3</p>
               </div>
