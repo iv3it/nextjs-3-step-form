@@ -187,7 +187,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
             Dodaj produkt
           </Button>
         } />
-        <DialogContent className="md:max-w-[720px]">
+        <DialogContent className="md:max-w-[720px] flex flex-col">
           <DialogHeader className="py-6">
             <DialogTitle>Dodaj nowy produkt</DialogTitle>
           </DialogHeader>
@@ -251,7 +251,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
                 >
                   {(formGroup) => (
                     <>
-                      <div className="w-full flex gap-x-4">
+                      <div className="w-full flex flex-col gap-4 md:flex-row">
                         <div className="w-full md:w-1/2 flex flex-col gap-2">
                           <Label htmlFor="step1.name">Nazwa produktu</Label>
                           <form.Field
@@ -339,7 +339,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
                           )}
                         </form.Field>
                       </div>
-                      <div className="w-full flex gap-x-4">
+                      <div className="w-full flex flex-col gap-4 md:flex-row">
                         <div className="w-full md:w-1/2 flex flex-col gap-2">
                           <Label htmlFor="step1.manufacturer">Producent</Label>
                           <form.Field
@@ -446,6 +446,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
                           {(field) => (
                             <>
                               <ToggleGroup
+                                className="flex-wrap"
                                 variant="outline"
                                 size="sm"
                                 multiple
@@ -508,7 +509,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
                 >
                   {(formGroup) => (
                     <>
-                      <div className="w-full flex gap-x-4">
+                      <div className="w-full flex flex-col gap-4 md:flex-row">
                         <div className="w-full md:w-1/2 flex flex-col gap-2">
                           <Label htmlFor="step2.priceNet">Cena netto</Label>
                           <form.Field
@@ -572,7 +573,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
                           </form.Field>
                         </div>
                       </div>
-                      <div className="w-full flex gap-x-4">
+                      <div className="w-full flex flex-col gap-4 md:flex-row">
                         <div className="w-full md:w-1/2 flex flex-col gap-2">
                           <Label htmlFor="step2.vat">Stawka VAT</Label>
                           <form.Field
@@ -807,7 +808,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
                       <Separator />
 
                       <p className="text-base font-medium">Limity koszyka</p>
-                      <div className="w-full flex gap-x-4">
+                      <div className="w-full flex flex-col gap-4 md:flex-row">
                         <div className="w-full md:w-1/2 flex flex-col gap-2">
                           <Label htmlFor="step3.minCartQuantity">Minimalna ilość</Label>
                           <form.Field
