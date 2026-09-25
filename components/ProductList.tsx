@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge"
@@ -80,14 +80,30 @@ const initialProducts: Product[] = [
 ]
 
 function ProductList() {
+  const PRODUCTS_STORAGE_KEY = "products";
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
+  useEffect(() => {
+    const storedProducts = window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
+
+    if (storedProducts) {
+      setProducts(JSON.parse(storedProducts) as Product[]);
+    }
+  }, []);
+
   const handleProductCreated = (product: Product) => {
+    const updatedProducts = [product, ...products];
+
     setProducts((currentProducts) => [
       product,
       ...currentProducts,
     ]);
+
+    window.localStorage.setItem(
+      PRODUCTS_STORAGE_KEY,
+      JSON.stringify(updatedProducts)
+    );
 
     setPage(1);
 
