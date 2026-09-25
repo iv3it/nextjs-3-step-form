@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge"
 import { useQueryState, parseAsInteger } from "nuqs";
+import { toast } from "@/components/ui/toast"
 
 import {
   Pagination,
@@ -89,6 +90,11 @@ function ProductList() {
     ]);
 
     setPage(1);
+
+    toast.add({
+      type: "success",
+      description: "Produkt został dodany.",
+    })
   };
 
   const PAGE_SIZE = 5;
