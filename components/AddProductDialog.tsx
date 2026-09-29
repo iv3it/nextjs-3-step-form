@@ -187,7 +187,7 @@ function AddProductDialog({ onProductCreated }: AddProductDialogProps) {
             Dodaj produkt
           </Button>
         } />
-        <DialogContent className="md:max-w-[720px] flex flex-col">
+        <DialogContent className="md:max-w-[720px] flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto">
           <DialogHeader className="py-6">
             <DialogTitle>Dodaj nowy produkt</DialogTitle>
           </DialogHeader>
