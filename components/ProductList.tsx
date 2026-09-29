@@ -84,26 +84,44 @@ function ProductList() {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
-  useEffect(() => {
-    const storedProducts = window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
+  const getStoredProducts = (): Product[] => {
+    const storedProducts = localStorage.getItem(PRODUCTS_STORAGE_KEY);
 
-    if (storedProducts) {
-      setProducts(JSON.parse(storedProducts) as Product[]);
-    }
-  }, []);
+    return storedProducts ? JSON.parse(storedProducts) : [];
+  }
 
-  const handleProductCreated = (product: Product) => {
+  const addStoredProduct = (product: Product) => {
+    const products = getStoredProducts();
     const updatedProducts = [product, ...products];
 
-    setProducts((currentProducts) => [
-      product,
-      ...currentProducts,
-    ]);
-
-    window.localStorage.setItem(
+    localStorage.setItem(
       PRODUCTS_STORAGE_KEY,
       JSON.stringify(updatedProducts)
     );
+
+    return updatedProducts;
+  };
+
+  useEffect(() => {
+    const storedProducts = getStoredProducts();
+
+    if (storedProducts.length > 0) {
+      setProducts(storedProducts);
+      return;
+    }
+
+    localStorage.setItem(
+      PRODUCTS_STORAGE_KEY,
+      JSON.stringify(initialProducts)
+    );
+
+    setProducts(initialProducts);
+  }, []);
+
+  const handleProductCreated = (product: Product) => {
+    const updatedProducts = addStoredProduct(product);
+
+    setProducts(updatedProducts);
 
     setPage(1);
 
